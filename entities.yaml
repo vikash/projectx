@@ -10,6 +10,8 @@ domains:
               type: int
             - name: name
               type: string
+            - name: image
+              type: string
         - name: product
           fields:
             - name: id
@@ -23,3 +25,12 @@ domains:
       password: password
       port: 3306
   - name: customer
+    entities:
+      - name: customer
+        fields:
+          - name: id
+            type: int
+          - name: name
+            type: string
+          - name: address
+            type: string

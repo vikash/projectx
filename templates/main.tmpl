@@ -30,7 +30,8 @@ func main() {
         // Handlers for {{$name}}
         {{$name}}Store := store.New{{$Name}}Store()
         {{$name}}Handler  := handler.New{{$Name}}Handler({{$name}}Store)
-        app.GET("/{{$name}}", {{ $name }}Handler.Get)
+        app.GET("/{{$name}}", {{ $name }}Handler.GetAll)
+        app.GET("/{{$name}}/{id}", {{ $name }}Handler.Get)
         app.POST("/{{$name}}", {{ $name }}Handler.Create)
     {{- end }}
 

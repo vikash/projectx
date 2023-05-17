@@ -5,20 +5,22 @@ import (
 )
 
 {{- $Name := .Name | PascalCase}}
+{{$_name := .Name | SnakeCase -}}
 {{$name := .Name | CamelCase -}}
 
 // Public interface
 type {{$Name}}Store interface {
+    Index(ctx *gofr.Context) ([]{{- $Name}}, error)
     Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error)
-	Retrieve(ctx *gofr.Context) ([]{{$Name}}, error)
-	Update(ctx *gofr.Context, {{$name}} {{$Name}}) error
-    Delete(ctx *gofr.Context, id int) error
+	Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error)
+	Update(ctx *gofr.Context, {{$name}} *{{$Name}}) error
+    Delete(ctx *gofr.Context, id string) error
 }
 
 // DataModel for {{$name}}
 type {{$Name}} struct {
     {{- range .Fields }}
-        {{.name}} {{.type}}
+        {{.name | PascalCase}} {{.type}} `json:"{{.name | CamelCase}}"`
     {{- end }}
 }
 
@@ -30,29 +32,48 @@ func New{{$Name}}Store() {{$Name}}Store  {
 // Internal store type which should adhere to the public interface
 type {{$name}} struct {}
 
-func (m *{{$name}}) Retrieve(ctx *gofr.Context) ([]{{$Name}}, error) {
-    rows, err := ctx.DB().QueryContext(ctx, "select * from {{$Name}}")
+func (m *{{$name}}) Index(ctx *gofr.Context) ([]{{$Name}}, error) {
+    rows, err := ctx.DB().QueryContext(ctx, "select * from {{$_name}}")
     if err != nil {
         return nil, err
     }
 
     models := []{{$Name}}{}
-    err = rows.Scan(&models)
-    if err != nil {
-        return nil, err
+
+    for rows.Next() {
+        var m {{$Name}}
+        err := rows.Scan(
+         {{- range .Fields }}&m.{{.name | PascalCase}},{{ end -}}
+         )
+        if err != nil {
+                return nil, err
+        }
+        models = append(models, m)
     }
 
     return models, nil
+}
+
+func (m *{{$name}}) Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error) {
+    row := ctx.DB().QueryRowContext(ctx, "select * from {{$_name}} where id = ?", id)
+
+    model := {{$Name}}{}
+    err := row.Scan({{- range .Fields }}&model.{{.name | PascalCase}},{{ end -}})
+    if err != nil {
+            return nil, err
+    }
+
+    return &model, nil
 }
 
 func (m *{{$name}}) Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error) {
 	return nil, nil
 }
 
-func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} {{$Name}}) error {
+func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} *{{$Name}}) error {
     return nil
 }
 
-func (m *{{$name}}) Delete(ctx *gofr.Context, id int) error {
+func (m *{{$name}}) Delete(ctx *gofr.Context, id string) error {
     return nil
 }

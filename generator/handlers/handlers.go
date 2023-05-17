@@ -30,8 +30,18 @@ func New{{$Name}}Handler(store store.{{$Name}}Store)  *{{$name}}Handler{
     }
 }
 
+func (h *{{$name}}Handler) GetAll(ctx *gofr.Context) (interface{}, error) {
+	resp, err := h.store.Index(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (h *{{$name}}Handler) Get(ctx *gofr.Context) (interface{}, error) {
-	resp, err := h.store.Retrieve(ctx)
+	id := ctx.PathParam("id")
+	resp, err := h.store.Retrieve(ctx, id)
 	if err != nil {
 		return nil, err
 	}
