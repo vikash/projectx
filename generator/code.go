@@ -71,10 +71,11 @@ func CreateDomainCode(g config.Global, d *config.Domain) error {
 func parseTemplateToFolder(folderName string, g config.Global, d *config.Domain) error {
 
 	var templates = map[string]string{
-		"main.tmpl":  "main.go",
-		"gomod.tmpl": "go.mod",
-		"gosum.tmpl": "go.sum",
-		"env.tmpl":   "configs/.env",
+		"main.tmpl":   "main.go",
+		"gomod.tmpl":  "go.mod",
+		"gosum.tmpl":  "go.sum",
+		"env.tmpl":    "configs/.env",
+		"docker.tmpl": "Dockerfile",
 	}
 
 	tmpl := template.Must(template.New("").Funcs(config.FuncMap).ParseFS(fs.FS, "*.tmpl"))
