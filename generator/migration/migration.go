@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/vikash/projectx/generator/config"
 	"os"
-	"strings"
 	"text/template"
 )
 
-func Create(d config.Domain, folderName string) error {
+func Create(d *config.Domain, folderName string) error {
 	// Parse migration templates
 	tmpl := template.Must(template.New("").Funcs(config.FuncMap).ParseFS(templateFS, "*.tmpl"))
 
@@ -52,7 +51,7 @@ func Create(d config.Domain, folderName string) error {
 }
 
 func createQueryForEntity(e config.Entity) string {
-	q := "create table IF NOT EXISTS `" + config.SnakeCase(e.Name) + "` ("
+	q := "create table IF NOT EXISTS `" + config.SnakeCase(e.Name) + "` (id char(36) not null, "
 	for _, f := range e.Fields {
 		name, ok1 := f["name"]
 		t, ok2 := f["type"]
@@ -62,11 +61,11 @@ func createQueryForEntity(e config.Entity) string {
 		}
 
 		if ok1 && ok2 {
-			q += fmt.Sprintf("`%s` %s, ", name, t)
+			q += fmt.Sprintf("`%s` %s, ", config.SnakeCase(name), t)
 		}
 	}
 
-	q = strings.TrimRight(q, ", ") + ");"
+	q += " PRIMARY KEY (id) );"
 
 	return q
 }

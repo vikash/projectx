@@ -2,11 +2,12 @@ package store
 
 import (
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
+	"github.com/google/uuid"
 )
 
-{{- $Name := .Name | PascalCase}}
-{{$_name := .Name | SnakeCase -}}
-{{$name := .Name | CamelCase -}}
+{{- $Name := .entity.Name | PascalCase}}
+{{$_name := .entity.Name | SnakeCase -}}
+{{$name := .entity.Name | CamelCase -}}
 
 // Public interface
 type {{$Name}}Store interface {
@@ -19,7 +20,7 @@ type {{$Name}}Store interface {
 
 // DataModel for {{$name}}
 type {{$Name}} struct {
-    {{- range .Fields }}
+    {{- range .entity.Fields }}
         {{.name | PascalCase}} {{.type}} `json:"{{.name | CamelCase}}"`
     {{- end }}
 }
@@ -43,7 +44,7 @@ func (m *{{$name}}) Index(ctx *gofr.Context) ([]{{$Name}}, error) {
     for rows.Next() {
         var m {{$Name}}
         err := rows.Scan(
-         {{- range .Fields }}&m.{{.name | PascalCase}},{{ end -}}
+         {{- range .entity.Fields }}&m.{{.name | PascalCase}},{{ end -}}
          )
         if err != nil {
                 return nil, err
@@ -58,7 +59,7 @@ func (m *{{$name}}) Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error) {
     row := ctx.DB().QueryRowContext(ctx, "select * from {{$_name}} where id = ?", id)
 
     model := {{$Name}}{}
-    err := row.Scan({{- range .Fields }}&model.{{.name | PascalCase}},{{ end -}})
+    err := row.Scan({{- range .entity.Fields }}&model.{{.name | PascalCase}},{{ end -}})
     if err != nil {
             return nil, err
     }
@@ -67,7 +68,18 @@ func (m *{{$name}}) Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error) {
 }
 
 func (m *{{$name}}) Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error) {
-	return nil, nil
+    // create ID - no need to depend on datastore specific autoincrement
+    id := uuid.New().String()
+    {{$name}}.Id = id
+
+    query := "{{.insertQuery}}"
+
+    _, err := ctx.DB().QueryContext(ctx, query, {{.valueString}})
+    if err != nil {
+        return nil, err
+    }
+
+	return m.Retrieve(ctx, id)
 }
 
 func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} *{{$Name}}) error {

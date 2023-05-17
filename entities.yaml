@@ -6,16 +6,12 @@ domains:
     entities:
         - name: brand
           fields:
-            - name: id
-              type: int
             - name: name
               type: string
             - name: image
               type: string
         - name: product
           fields:
-            - name: id
-              type: int
             - name: name
               type: string
     database:
@@ -28,8 +24,6 @@ domains:
     entities:
       - name: customer
         fields:
-          - name: id
-            type: int
           - name: name
             type: string
           - name: address

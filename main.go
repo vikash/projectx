@@ -34,7 +34,7 @@ func main() {
 
 		for i, d := range conf.Domains {
 			c.Logger.Infof("%d. Parsing %s domain", i+1, d.Name)
-			err := generator.CreateDomainCode(conf.Global, d)
+			err := generator.CreateDomainCode(conf.Global, &d)
 			if err != nil {
 				c.Logger.Error(err)
 			}

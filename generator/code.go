@@ -15,7 +15,7 @@ import (
 	"text/template"
 )
 
-func CreateDomainCode(g config.Global, d config.Domain) error {
+func CreateDomainCode(g config.Global, d *config.Domain) error {
 	if strings.TrimSpace(d.Name) == "" {
 		return errors.New("Domain requires a name. Can not genenerate code.")
 	}
@@ -43,7 +43,12 @@ func CreateDomainCode(g config.Global, d config.Domain) error {
 			return errors.New("entity requires a name.")
 		}
 
-		err := handlers.Create(e, folderName+"/handler", g, d)
+		e.Fields = append([]config.Field{map[string]string{
+			"name": "id",
+			"type": "string",
+		}}, e.Fields...)
+
+		err := handlers.Create(e, folderName+"/handler", g, *d)
 		if err != nil {
 			return fmt.Errorf("Could not generate handler for '%s'. Error: %s", e.Name, err.Error())
 		}
@@ -63,7 +68,7 @@ func CreateDomainCode(g config.Global, d config.Domain) error {
 	return nil
 }
 
-func parseTemplateToFolder(folderName string, g config.Global, d config.Domain) error {
+func parseTemplateToFolder(folderName string, g config.Global, d *config.Domain) error {
 
 	var templates = map[string]string{
 		"main.tmpl":  "main.go",
@@ -85,7 +90,7 @@ func parseTemplateToFolder(folderName string, g config.Global, d config.Domain) 
 		err = tmpl.ExecuteTemplate(&buf, t, struct {
 			D config.Domain
 			G config.Global
-		}{d, g})
+		}{*d, g})
 		if err != nil {
 			return fmt.Errorf("can not parse template '%s'. Error: %s", t, err.Error())
 		}
