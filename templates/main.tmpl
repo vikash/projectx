@@ -1,9 +1,13 @@
 package main
 
 import (
+    "developer.zopsmart.com/go/gofr/cmd/gofr/migration"
+	dbmigration "developer.zopsmart.com/go/gofr/cmd/gofr/migration/dbMigration"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
+
 	"{{.G.PackagePrefix}}/{{.D.Name}}-service/handler"
 	"{{.G.PackagePrefix}}/{{.D.Name}}-service/store"
+	"{{.G.PackagePrefix}}/{{.D.Name}}-service/migrations"
 )
 
 func main() {
@@ -12,6 +16,13 @@ func main() {
 
     // Bypass header validation during API calls
     app.Server.ValidateHeaders = false
+
+    // Run DB Migrations
+    err := migration.Migrate(app.Config.Get("APP_NAME"), dbmigration.NewGorm(app.GORM()), migrations.All(), "UP", app.Logger)
+
+    if err != nil {
+        app.Logger.Error(err)
+    }
 
     {{- range .D.Entities }}
         {{$Name := .Name | PascalCase}}

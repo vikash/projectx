@@ -52,7 +52,7 @@ func Create(d config.Domain, folderName string) error {
 }
 
 func createQueryForEntity(e config.Entity) string {
-	q := "create table `" + config.SnakeCase(e.Name) + "` ("
+	q := "create table IF NOT EXISTS `" + config.SnakeCase(e.Name) + "` ("
 	for _, f := range e.Fields {
 		name, ok1 := f["name"]
 		t, ok2 := f["type"]

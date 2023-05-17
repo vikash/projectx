@@ -55,7 +55,7 @@ func CreateDomainCode(g config.Global, d config.Domain) error {
 	}
 
 	// Create migrations for all entities
-	err = migration.Create(d, folderName+"/migration")
+	err = migration.Create(d, folderName+"/migrations")
 	if err != nil {
 		return fmt.Errorf("could not generate migration for '%s'. Error: %s", d.Name, err.Error())
 	}
@@ -119,7 +119,7 @@ func ensureGenDirectory(path string) error {
 	os.Mkdir(path+"/configs", os.ModePerm)
 	os.Mkdir(path+"/handler", os.ModePerm)
 	os.Mkdir(path+"/store", os.ModePerm)
-	os.Mkdir(path+"/migration", os.ModePerm)
+	os.Mkdir(path+"/migrations", os.ModePerm)
 
 	return nil
 }
