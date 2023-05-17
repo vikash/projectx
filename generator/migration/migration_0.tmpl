@@ -1,0 +1,13 @@
+package migrations
+
+import (
+	"developer.zopsmart.com/go/gofr/cmd/gofr/migration/dbMigration"
+)
+
+func All() map[string]dbmigration.Migrator {
+	return map[string]dbmigration.Migrator{
+	{{- range $k, $v := . }}
+		"{{$k}}": {{$v}}{},
+	{{- end }}
+	}
+}

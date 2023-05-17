@@ -1,0 +1,29 @@
+package migrations
+
+import (
+	"developer.zopsmart.com/go/gofr/pkg/datastore"
+	"developer.zopsmart.com/go/gofr/pkg/log"
+)
+
+type {{.migrationName}} struct {
+}
+
+{{- $tableName := .entity.Name | SnakeCase }}
+
+func (m {{.migrationName}}) Up(d *datastore.DataStore, logger log.Logger) error {
+	_, err := d.DB().Exec(createTable)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m {{.migrationName}}) Down(d *datastore.DataStore, logger log.Logger) error {
+	_, err := d.DB().Exec(deleteTable)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

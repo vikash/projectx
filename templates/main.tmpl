@@ -1,0 +1,28 @@
+package main
+
+import (
+	"developer.zopsmart.com/go/gofr/pkg/gofr"
+	"{{.G.PackagePrefix}}/{{.D.Name}}-service/handler"
+	"{{.G.PackagePrefix}}/{{.D.Name}}-service/store"
+)
+
+func main() {
+	// create the application object
+	app := gofr.New()
+
+    // Bypass header validation during API calls
+    app.Server.ValidateHeaders = false
+
+    {{- range .D.Entities }}
+        {{$Name := .Name | PascalCase}}
+        {{$name := .Name | CamelCase}}
+        // Handlers for {{$name}}
+        {{$name}}Store := store.New{{$Name}}Store()
+        {{$name}}Handler  := handler.New{{$Name}}Handler({{$name}}Store)
+        app.GET("/{{$name}}", {{ $name }}Handler.Get)
+        app.POST("/{{$name}}", {{ $name }}Handler.Create)
+    {{- end }}
+
+	// start the server
+	app.Start()
+}

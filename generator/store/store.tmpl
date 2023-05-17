@@ -1,0 +1,58 @@
+package store
+
+import (
+	"developer.zopsmart.com/go/gofr/pkg/gofr"
+)
+
+{{- $Name := .Name | PascalCase}}
+{{$name := .Name | CamelCase -}}
+
+// Public interface
+type {{$Name}}Store interface {
+    Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error)
+	Retrieve(ctx *gofr.Context) ([]{{$Name}}, error)
+	Update(ctx *gofr.Context, {{$name}} {{$Name}}) error
+    Delete(ctx *gofr.Context, id int) error
+}
+
+// DataModel for {{$name}}
+type {{$Name}} struct {
+    {{- range .Fields }}
+        {{.name}} {{.type}}
+    {{- end }}
+}
+
+// Factory for the store interface
+func New{{$Name}}Store() {{$Name}}Store  {
+	return &{{$name}}{}
+}
+
+// Internal store type which should adhere to the public interface
+type {{$name}} struct {}
+
+func (m *{{$name}}) Retrieve(ctx *gofr.Context) ([]{{$Name}}, error) {
+    rows, err := ctx.DB().QueryContext(ctx, "select * from {{$Name}}")
+    if err != nil {
+        return nil, err
+    }
+
+    models := []{{$Name}}{}
+    err = rows.Scan(&models)
+    if err != nil {
+        return nil, err
+    }
+
+    return models, nil
+}
+
+func (m *{{$name}}) Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error) {
+	return nil, nil
+}
+
+func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} {{$Name}}) error {
+    return nil
+}
+
+func (m *{{$name}}) Delete(ctx *gofr.Context, id int) error {
+    return nil
+}

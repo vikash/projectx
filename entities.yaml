@@ -1,0 +1,25 @@
+global:
+  packagePrefix: github.com/zopsmart
+  genFolder: gen
+domains:
+  - name: catalogue
+    entities:
+        - name: brand
+          fields:
+            - name: id
+              type: int
+            - name: name
+              type: string
+        - name: product
+          fields:
+            - name: id
+              type: int
+            - name: name
+              type: string
+    database:
+      type: mysql
+      host: localhost
+      user: root
+      password: password
+      port: 3306
+  - name: customer
