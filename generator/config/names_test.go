@@ -10,6 +10,8 @@ func TestGetNameInCamelCase(t *testing.T) {
 		"Brand":            "brand",
 		"Something Simple": "somethingSimple",
 		"she@something":    "sheSomething",
+		"imageUrl":         "imageUrl",
+		"imageURL":         "imageURL",
 	}
 
 	testNameFunctiont(t, cases, CamelCase)
@@ -21,6 +23,8 @@ func TestGetNameInPascalCase(t *testing.T) {
 		"Brand":            "Brand",
 		"Something Simple": "SomethingSimple",
 		"she@something":    "SheSomething",
+		"imageUrl":         "ImageUrl",
+		"imageURL":         "ImageURL",
 	}
 
 	testNameFunctiont(t, cases, PascalCase)
@@ -32,6 +36,9 @@ func TestGetNameInSnakeCase(t *testing.T) {
 		"Brand":            "brand",
 		"Something Simple": "something_simple",
 		"she@something":    "she_something",
+		"SomethingSimple":  "something_simple",
+		"imageURL":         "image_url",
+		"imageUrl":         "image_url",
 	}
 
 	testNameFunctiont(t, cases, SnakeCase)

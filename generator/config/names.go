@@ -18,7 +18,7 @@ func CamelCase(str string) string {
 	str = strings.TrimSpace(str)
 	str = regexp.MustCompile(`[^a-zA-Z0-9 ]+`).ReplaceAllString(str, " ")
 	words := strings.Split(str, " ")
-	res := strings.ToLower(words[0])
+	res := strings.ToLower(string(words[0][0])) + words[0][1:]
 	for _, word := range words[1:] {
 		res += strings.Title(word)
 	}
@@ -27,10 +27,11 @@ func CamelCase(str string) string {
 
 func SnakeCase(str string) string {
 	str = strings.TrimSpace(str)
-	str = regexp.MustCompile(`[^a-zA-Z0-9 ]+`).ReplaceAllString(str, " ")
-	str = strings.ToLower(str)
-	str = strings.ReplaceAll(str, " ", "_")
-	return str
+	snake := regexp.MustCompile("(.)([A-Z][^A-Z]+)").ReplaceAllString(str, "${1}_${2}")
+	snake = regexp.MustCompile("([a-z0-9])([A-Z])").ReplaceAllString(snake, "${1}_${2}")
+	snake = strings.ReplaceAll(snake, " ", "")
+	snake = regexp.MustCompile(`[^_a-zA-Z0-9]+`).ReplaceAllString(snake, "_")
+	return strings.ToLower(snake)
 }
 
 var FuncMap = template.FuncMap{

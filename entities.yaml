@@ -8,7 +8,7 @@ domains:
           fields:
             - name: name
               type: string
-            - name: image
+            - name: imageURL
               type: string
         - name: product
           fields:
