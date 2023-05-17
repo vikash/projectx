@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/vikash/projectx/generator/config"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -51,9 +52,25 @@ func Create(d config.Domain, folderName string) error {
 }
 
 func createQueryForEntity(e config.Entity) string {
-	return ""
+	q := "create table `" + config.SnakeCase(e.Name) + "` ("
+	for _, f := range e.Fields {
+		name, ok1 := f["name"]
+		t, ok2 := f["type"]
+
+		if t == "string" {
+			t = "varchar(255)"
+		}
+
+		if ok1 && ok2 {
+			q += fmt.Sprintf("`%s` %s, ", name, t)
+		}
+	}
+
+	q = strings.TrimRight(q, ", ") + ");"
+
+	return q
 }
 
 func deleteQueryForEntity(e config.Entity) string {
-	return ""
+	return "drop table `" + config.SnakeCase(e.Name) + "`;"
 }
