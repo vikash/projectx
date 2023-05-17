@@ -26,6 +26,8 @@ func Create(d config.Domain, folderName string) error {
 		err = tmpl.ExecuteTemplate(file, "migration_1.tmpl", map[string]interface{}{
 			"entity":        entity,
 			"migrationName": migrationName,
+			"createQuery":   createQueryForEntity(entity),
+			"deleteQuery":   deleteQueryForEntity(entity),
 		})
 		if err != nil {
 			return fmt.Errorf("can not parse migration_1.tmpl. Error: %s", err.Error())
@@ -46,4 +48,12 @@ func Create(d config.Domain, folderName string) error {
 	}
 
 	return nil
+}
+
+func createQueryForEntity(e config.Entity) string {
+	return ""
+}
+
+func deleteQueryForEntity(e config.Entity) string {
+	return ""
 }

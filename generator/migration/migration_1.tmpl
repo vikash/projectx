@@ -11,7 +11,7 @@ type {{.migrationName}} struct {
 {{- $tableName := .entity.Name | SnakeCase }}
 
 func (m {{.migrationName}}) Up(d *datastore.DataStore, logger log.Logger) error {
-	_, err := d.DB().Exec(createTable)
+	_, err := d.DB().Exec("{{.createQuery}}")
 	if err != nil {
 		return err
 	}
@@ -20,7 +20,7 @@ func (m {{.migrationName}}) Up(d *datastore.DataStore, logger log.Logger) error 
 }
 
 func (m {{.migrationName}}) Down(d *datastore.DataStore, logger log.Logger) error {
-	_, err := d.DB().Exec(deleteTable)
+	_, err := d.DB().Exec("{{.deleteQuery}}")
 	if err != nil {
 		return err
 	}
