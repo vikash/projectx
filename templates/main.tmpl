@@ -33,6 +33,7 @@ func main() {
         app.GET("/{{$name}}", {{ $name }}Handler.GetAll)
         app.GET("/{{$name}}/{id}", {{ $name }}Handler.Get)
         app.POST("/{{$name}}", {{ $name }}Handler.Create)
+        app.DELETE("/{{$name}}/{id}", {{ $name }}Handler.Delete)
     {{- end }}
 
 	// start the server

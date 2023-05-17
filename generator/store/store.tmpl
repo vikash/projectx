@@ -1,7 +1,10 @@
 package store
 
 import (
+    "database/sql"
+
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
+	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"github.com/google/uuid"
 )
 
@@ -55,18 +58,6 @@ func (m *{{$name}}) Index(ctx *gofr.Context) ([]{{$Name}}, error) {
     return models, nil
 }
 
-func (m *{{$name}}) Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error) {
-    row := ctx.DB().QueryRowContext(ctx, "select * from {{$_name}} where id = ?", id)
-
-    model := {{$Name}}{}
-    err := row.Scan({{- range .entity.Fields }}&model.{{.name | PascalCase}},{{ end -}})
-    if err != nil {
-            return nil, err
-    }
-
-    return &model, nil
-}
-
 func (m *{{$name}}) Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error) {
     // create ID - no need to depend on datastore specific autoincrement
     id := uuid.New().String()
@@ -82,10 +73,42 @@ func (m *{{$name}}) Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, 
 	return m.Retrieve(ctx, id)
 }
 
+func (m *{{$name}}) Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error) {
+    row := ctx.DB().QueryRowContext(ctx, "select * from {{$_name}} where id = ?", id)
+
+    model := {{$Name}}{}
+    err := row.Scan({{- range .entity.Fields }}&model.{{.name | PascalCase}},{{ end -}})
+
+    if err == sql.ErrNoRows {
+        return nil, errors.EntityNotFound{Entity: "{{$name}}", ID: id}
+    }
+
+    if err != nil {
+            return nil, err
+    }
+
+    return &model, nil
+}
+
+
 func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} *{{$Name}}) error {
     return nil
 }
 
 func (m *{{$name}}) Delete(ctx *gofr.Context, id string) error {
+    res, err := ctx.DB().ExecContext(ctx, "delete from {{$_name}} where id = ?", id)
+    if err != nil {
+    	return errors.DB{Err: err}
+    }
+
+    rowID, err := res.RowsAffected()
+    if err != nil {
+        return errors.DB{Err: err}
+    }
+
+    if rowID == 0 {
+    	return errors.EntityNotFound{Entity: "{{$name}}", ID: id}
+    }
+
     return nil
 }

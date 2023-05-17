@@ -64,6 +64,13 @@ func (h *{{$name}}Handler) Create(ctx *gofr.Context) (interface{}, error) {
 
 	return resp, nil
 }
+
+func (h *{{$name}}Handler) Delete(ctx *gofr.Context) (interface{}, error) {
+	id := ctx.PathParam("id")
+	err := h.store.Delete(ctx, id)
+
+	return true, err
+}
 `
 
 func Create(e config.Entity, folderName string, g config.Global, d config.Domain) error {
