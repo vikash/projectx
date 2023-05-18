@@ -71,6 +71,22 @@ func (h *{{$name}}Handler) Delete(ctx *gofr.Context) (interface{}, error) {
 
 	return true, err
 }
+
+func (h *{{$name}}Handler) Update(ctx *gofr.Context) (interface{}, error) {
+	id := ctx.PathParam("id")
+	
+	var model store.{{$Name}}
+	err := ctx.Bind(&model)
+	if err != nil {
+		return nil, errors.InvalidParam{Param: []string{"request body error"}}
+	}
+	if model.Id != "" {
+		return nil, errors.InvalidParam{Param: []string{"request body should not have id."}}
+	}
+	model.Id = id
+
+	return h.store.Update(ctx, &model)
+}
 `
 
 func Create(e config.Entity, folderName string, g config.Global, d config.Domain) error {

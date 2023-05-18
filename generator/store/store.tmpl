@@ -17,7 +17,7 @@ type {{$Name}}Store interface {
     Index(ctx *gofr.Context) ([]{{- $Name}}, error)
     Create(ctx *gofr.Context, {{$name}} {{$Name}}) (*{{$Name}}, error)
 	Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error)
-	Update(ctx *gofr.Context, {{$name}} *{{$Name}}) error
+	Update(ctx *gofr.Context, {{$name}} *{{$Name}}) (*{{$Name}}, error)
     Delete(ctx *gofr.Context, id string) error
 }
 
@@ -91,8 +91,16 @@ func (m *{{$name}}) Retrieve(ctx *gofr.Context, id string) (*{{$Name}}, error) {
 }
 
 
-func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} *{{$Name}}) error {
-    return nil
+func (m *{{$name}}) Update(ctx *gofr.Context, {{$name}} *{{$Name}}) (*{{$Name}}, error) {
+    id := {{$name}}.Id
+    query := "{{.updateQuery}}"
+
+    _, err := ctx.DB().QueryContext(ctx, query, {{.updateValues}}, id)
+    if err != nil {
+        return nil, err
+    }
+
+    return m.Retrieve(ctx, id)
 }
 
 func (m *{{$name}}) Delete(ctx *gofr.Context, id string) error {
