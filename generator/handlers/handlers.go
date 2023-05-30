@@ -100,7 +100,7 @@ func Create(e config.Entity, folderName string, g config.Global, d config.Domain
 	tmpl := template.Must(template.New("handler").Funcs(config.FuncMap).Parse(temp))
 	err = tmpl.ExecuteTemplate(file, "handler", map[string]interface{}{
 		"entity":     e,
-		"moduleName": g.PackagePrefix + "/" + config.CamelCase(d.Name) + "-service",
+		"moduleName": g.PackagePrefix + "/" + config.CamelCase(d.Name) + "-data-service",
 	})
 	if err != nil {
 		return fmt.Errorf("can not parse handler.tmpl. Error: %s", err.Error())

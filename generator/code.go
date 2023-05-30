@@ -25,7 +25,7 @@ func CreateDomainCode(g config.Global, d *config.Domain) error {
 		return fmt.Errorf("some entities are required in a domain for code generatio. 0 found in %s", d.Name)
 	}
 
-	folderName := g.GenFolder + "/" + config.CamelCase(d.Name) + "-service"
+	folderName := g.GenFolder + "/" + config.CamelCase(d.Name) + "-data-service"
 	err := ensureGenDirectory(folderName)
 	if err != nil {
 		return fmt.Errorf("can not create directory %s for code. Error: %s ", folderName, err.Error())
